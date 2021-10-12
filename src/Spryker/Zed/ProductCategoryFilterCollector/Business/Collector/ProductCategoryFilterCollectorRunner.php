@@ -5,29 +5,43 @@
  * Use of this software requires acceptance of the Evaluation License Agreement. See LICENSE file.
  */
 
-namespace Spryker\Zed\ProductCategoryFilterCollector\Business;
+namespace Spryker\Zed\ProductCategoryFilterCollector\Business\Collector;
 
 use Generated\Shared\Transfer\LocaleTransfer;
 use Orm\Zed\Touch\Persistence\SpyTouchQuery;
+use Spryker\Zed\Collector\Business\Collector\DatabaseCollectorInterface;
 use Spryker\Zed\Collector\Business\Exporter\Reader\ReaderInterface;
 use Spryker\Zed\Collector\Business\Exporter\Writer\TouchUpdaterInterface;
 use Spryker\Zed\Collector\Business\Exporter\Writer\WriterInterface;
 use Spryker\Zed\Collector\Business\Model\BatchResultInterface;
-use Spryker\Zed\Kernel\Business\AbstractFacade;
+use Spryker\Zed\ProductCategoryFilterCollector\Dependency\Facade\ProductCategoryFilterCollectorToCollectorFacadeInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-/**
- * @api
- *
- * @method \Spryker\Zed\ProductCategoryFilterCollector\Business\ProductCategoryFilterCollectorBusinessFactory getFactory()
- */
-class ProductCategoryFilterCollectorFacade extends AbstractFacade implements ProductCategoryFilterCollectorFacadeInterface
+class ProductCategoryFilterCollectorRunner implements ProductCategoryFilterCollectorRunnerInterface
 {
     /**
-     * {@inheritDoc}
-     *
-     * @api
-     *
+     * @var \Spryker\Zed\Collector\Business\Collector\DatabaseCollectorInterface
+     */
+    protected $collector;
+
+    /**
+     * @var \Spryker\Zed\ProductCategoryFilterCollector\Dependency\Facade\ProductCategoryFilterCollectorToCollectorFacadeInterface
+     */
+    protected $collectorFacade;
+
+    /**
+     * @param \Spryker\Zed\Collector\Business\Collector\DatabaseCollectorInterface $collector
+     * @param \Spryker\Zed\ProductCategoryFilterCollector\Dependency\Facade\ProductCategoryFilterCollectorToCollectorFacadeInterface $collectorFacade
+     */
+    public function __construct(
+        DatabaseCollectorInterface $collector,
+        ProductCategoryFilterCollectorToCollectorFacadeInterface $collectorFacade
+    ) {
+        $this->collector = $collector;
+        $this->collectorFacade = $collectorFacade;
+    }
+
+    /**
      * @param \Orm\Zed\Touch\Persistence\SpyTouchQuery $baseQuery
      * @param \Generated\Shared\Transfer\LocaleTransfer $localeTransfer
      * @param \Spryker\Zed\Collector\Business\Model\BatchResultInterface $result
@@ -38,7 +52,7 @@ class ProductCategoryFilterCollectorFacade extends AbstractFacade implements Pro
      *
      * @return void
      */
-    public function runStorageProductCategoryFilterCollector(
+    public function run(
         SpyTouchQuery $baseQuery,
         LocaleTransfer $localeTransfer,
         BatchResultInterface $result,
@@ -46,8 +60,9 @@ class ProductCategoryFilterCollectorFacade extends AbstractFacade implements Pro
         WriterInterface $dataWriter,
         TouchUpdaterInterface $touchUpdater,
         OutputInterface $output
-    ) {
-        $this->getFactory()->createProductCategoryFilterCollectorRunner()->run(
+    ): void {
+        $this->collectorFacade->runCollector(
+            $this->collector,
             $baseQuery,
             $localeTransfer,
             $result,
