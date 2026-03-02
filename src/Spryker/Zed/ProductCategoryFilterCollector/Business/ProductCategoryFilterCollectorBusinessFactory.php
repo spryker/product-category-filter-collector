@@ -64,9 +64,6 @@ class ProductCategoryFilterCollectorBusinessFactory extends AbstractBusinessFact
         return new ProductCategoryFilterCollectorQuery();
     }
 
-    /**
-     * @return \Spryker\Zed\ProductCategoryFilterCollector\Business\Collector\ProductCategoryFilterCollectorRunnerInterface
-     */
     public function createProductCategoryFilterCollectorRunner(): ProductCategoryFilterCollectorRunnerInterface
     {
         return new ProductCategoryFilterCollectorRunner(
